@@ -1,0 +1,810 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .test-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .test-section {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .test-letter {
+        font-size: 120px;
+        font-weight: bold;
+        margin: 40px 0;
+        font-family: Arial, sans-serif;
+        transition: all 0.3s ease;
+        color: #1a2332;
+    }
+    
+    .controls {
+        margin: 30px 0;
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        margin: 8px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 120px;
+    }
+    
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-warning {
+        background: #ffc107;
+        color: black;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .btn:active {
+        transform: translateY(0);
+    }
+    
+    .progress-container {
+        margin: 20px 0;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        width: 0%;
+        transition: width 0.5s ease;
+        border-radius: 6px;
+    }
+    
+    .size-info {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #495057;
+        margin: 10px 0;
+    }
+    
+    .results-section {
+        display: none;
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 15px;
+        margin-top: 20px;
+        text-align: left;
+    }
+    
+    .result-card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin: 15px 0;
+        border-left: 5px solid #007bff;
+    }
+    
+    .saving-spinner {
+        display: none;
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .instructions {
+        background: #e7f3ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #007bff;
+    }
+    
+    .test-canvas {
+        border: 3px solid #007bff;
+        border-radius: 10px;
+        margin: 20px auto;
+        background: white;
+        display: block;
+        max-width: 100%;
+    }
+    
+    .color-test-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+        padding: 20px;
+    }
+    
+    .color-test-item {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .color-test-item.selected {
+        border-color: #28a745;
+        background: #e8f5e8;
+        transform: scale(1.02);
+    }
+    
+    .color-box {
+        width: 150px;
+        height: 100px;
+        margin: 0 auto 15px;
+        border: 3px solid #ddd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .color-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .color-option-btn {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 14px;
+    }
+    
+    .color-option-btn:hover {
+        background: #f8f9fa;
+    }
+    
+    .color-option-btn.selected {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    
+    .test-step {
+        display: none;
+    }
+    
+    .test-step.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+        gap: 15px;
+    }
+    
+    .step-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #ddd;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .step-dot.active {
+        background: #007bff;
+        transform: scale(1.3);
+    }
+    
+    .step-dot.completed {
+        background: #28a745;
+    }
+    
+    .step-label {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        white-space: nowrap;
+        color: #6c757d;
+    }
+    
+    .contrast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .contrast-item {
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .contrast-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        border: 2px solid #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .contrast-circle.selected {
+        border-color: #28a745;
+        border-width: 3px;
+        transform: scale(1.1);
+    }
+    
+    .contrast-circle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60%;
+        height: 60%;
+        background: rgba(0,0,0,0.1);
+        border-radius: 50%;
+    }
+    
+    @media (max-width: 768px) {
+        .btn {
+            padding: 10px 15px;
+            font-size: 12px;
+            min-width: 100px;
+            margin: 5px;
+        }
+        
+        .color-test-container {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .test-letter {
+            font-size: 80px;
+        }
+        
+        .color-box {
+            width: 120px;
+            height: 80px;
+        }
+    }
+</style>
+
+<div class="test-container">
+    <!-- Test Interface -->
+    <div id="test-interface">
+        <div class="test-section">
+            <h2>👁️ Comprehensive Eye Assessment</h2>
+            
+            <div class="step-indicator">
+                <div class="step-dot active" id="step1-dot">
+                    <span class="step-label">Acuity</span>
+                </div>
+                <div class="step-dot" id="step2-dot">
+                    <span class="step-label">Astigmatism</span>
+                </div>
+                <div class="step-dot" id="step3-dot">
+                    <span class="step-label">Color</span>
+                </div>
+                <div class="step-dot" id="step4-dot">
+                    <span class="step-label">Contrast</span>
+                </div>
+            </div>
+            
+            <!-- Step 1: Visual Acuity Test -->
+            <div class="test-step active" id="step1">
+                <h3>📊 Visual Acuity Test</h3>
+                
+                <div class="instructions">
+                    <strong>📏 Instructions:</strong> Sit about 20 inches (50cm) from your screen. 
+                    Cover one eye and read the letter below. Can you see it clearly?
+                </div>
+                
+                <div class="progress-container">
+                    <div class="size-info" id="size-info">Starting with large text (20/200 equivalent)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+                
+                <div class="test-letter" id="test-letter">E</div>
+                
+                <div class="controls">
+                    <button class="btn btn-success" onclick="canRead()">✅ Yes, clear</button>
+                    <button class="btn btn-warning" onclick="somewhatBlurry()">⚠️ Somewhat blurry</button>
+                    <button class="btn btn-danger" onclick="cantRead()">❌ Too blurry</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Astigmatism Test -->
+            <div class="test-step" id="step2">
+                <h3>🔍 Astigmatism Test</h3>
+                
+                <div class="instructions">
+                    <strong>👀 Instructions:</strong> Look at the pattern below. Do all the lines appear equally dark and sharp, 
+                    or do some lines look darker, blurrier, or distorted?
+                </div>
+                
+                <canvas class="test-canvas" id="astigmatismCanvas" width="400" height="400"></canvas>
+                
+                <div class="controls">
+                    <button class="btn btn-success" onclick="astigmatismResult('normal')">✅ All lines equal</button>
+                    <button class="btn btn-warning" onclick="astigmatismResult('mild')">⚠️ Some variation</button>
+                    <button class="btn btn-danger" onclick="astigmatismResult('significant')">❌ Clear differences</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Simple Color Vision Test -->
+            <div class="test-step" id="step3">
+                <h3>🎨 Color Vision Test</h3>
+                
+                <div class="instructions">
+                    <strong>🌈 Instructions:</strong> Look at each colored box below and select what color you see. 
+                    Be honest about what color appears to you.
+                </div>
+                
+                <div class="color-test-container">
+                    <!-- Test 1: Red-Green differentiation -->
+                    <div class="color-test-item">
+                        <div class="color-box" style="background: linear-gradient(135deg, #ff4444, #44ff44);">
+                            Color 1
+                        </div>
+                        <div class="color-options">
+                            <button class="color-option-btn" onclick="selectColorAnswer(1, 'Red and Green')">Red and Green</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(1, 'Brown and Yellow')">Brown and Yellow</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(1, 'Same Color')">Same Color</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Test 2: Blue-Purple differentiation -->
+                    <div class="color-test-item">
+                        <div class="color-box" style="background: linear-gradient(135deg, #4444ff, #ff44ff);">
+                            Color 2
+                        </div>
+                        <div class="color-options">
+                            <button class="color-option-btn" onclick="selectColorAnswer(2, 'Blue and Purple')">Blue and Purple</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(2, 'Gray and Pink')">Gray and Pink</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(2, 'Same Color')">Same Color</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Test 3: Color brightness perception -->
+                    <div class="color-test-item">
+                        <div class="color-box" style="background: linear-gradient(135deg, #00aa00, #00ff00);">
+                            Color 3
+                        </div>
+                        <div class="color-options">
+                            <button class="color-option-btn" onclick="selectColorAnswer(3, 'Dark Green and Light Green')">Dark Green and Light Green</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(3, 'Same Green')">Same Green</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(3, 'Yellow and Green')">Yellow and Green</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Test 4: Color confusion test -->
+                    <div class="color-test-item">
+                        <div class="color-box" style="background: #ff6b6b; color: white;">
+                            Single Color
+                        </div>
+                        <div class="color-options">
+                            <button class="color-option-btn" onclick="selectColorAnswer(4, 'Red')">Red</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(4, 'Green')">Green</button>
+                            <button class="color-option-btn" onclick="selectColorAnswer(4, 'Brown')">Brown</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-success" onclick="nextStep()">Continue to Next Test</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Contrast Sensitivity -->
+            <div class="test-step" id="step4">
+                <h3>⚫ Contrast Sensitivity Test</h3>
+                
+                <div class="instructions">
+                    <strong>🔲 Instructions:</strong> Can you see the faint gray circles below? 
+                    Click on the circles where you can see the pattern.
+                </div>
+                
+                <div class="contrast-grid" id="contrastGrid">
+                    <!-- Contrast items will be generated by JavaScript -->
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-success" onclick="completeAllTests()">Complete Assessment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="results-section">
+        <h3>🎯 Comprehensive Eye Assessment Results</h3>
+        <div id="results-content"></div>
+        
+        <div class="saving-spinner" id="saving-spinner">
+            <p>💾 Saving your comprehensive results...</p>
+            <div style="margin: 20px;">
+                <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+            </div>
+        </div>
+        
+        <form id="save-form" method="POST" style="display: none;">
+            <input type="hidden" name="left_eye_score" id="left-eye-input">
+            <input type="hidden" name="right_eye_score" id="right-eye-input">
+            <input type="hidden" name="test_type" value="Comprehensive">
+            <input type="hidden" name="notes" id="notes-input">
+        </form>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn btn-success" onclick="location.reload()">🔄 New Assessment</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">📊 View Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Test 1: Visual Acuity
+    const testLevels = [
+        { size: 120, acuity: '20/200', description: 'Very large text' },
+        { size: 100, acuity: '20/100', description: 'Large text' },
+        { size: 80, acuity: '20/80', description: 'Medium-large text' },
+        { size: 60, acuity: '20/60', description: 'Medium text' },
+        { size: 50, acuity: '20/50', description: 'Medium-small text' },
+        { size: 40, acuity: '20/40', description: 'Small text' },
+        { size: 35, acuity: '20/30', description: 'Quite small text' },
+        { size: 30, acuity: '20/25', description: 'Small text' },
+        { size: 25, acuity: '20/20', description: 'Very small text' },
+        { size: 20, acuity: '20/15', description: 'Extremely small text' }
+    ];
+
+    const letters = ['E', 'F', 'P', 'T', 'O', 'Z', 'L', 'D', 'C', 'N'];
+    
+    let currentLevel = 0;
+    let smallestReadableLevel = 0;
+    let currentStep = 1;
+    
+    // Test results storage
+    let testResults = {
+        acuity: '20/200',
+        acuityAssessment: 'Very Poor',
+        astigmatism: 'Not tested',
+        astigmatismResult: '',
+        colorVision: 'Not tested',
+        colorAnswers: {},
+        contrastSensitivity: 'Not tested',
+        contrastResults: {}
+    };
+
+    function updateStepIndicator() {
+        for (let i = 1; i <= 4; i++) {
+            const dot = document.getElementById(`step${i}-dot`);
+            dot.classList.remove('active', 'completed');
+            if (i < currentStep) {
+                dot.classList.add('completed');
+            } else if (i === currentStep) {
+                dot.classList.add('active');
+            }
+        }
+    }
+
+    function showStep(stepNumber) {
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById(`step${i}`).classList.remove('active');
+        }
+        document.getElementById(`step${stepNumber}`).classList.add('active');
+        currentStep = stepNumber;
+        updateStepIndicator();
+        
+        // Initialize tests when shown
+        if (stepNumber === 2) {
+            drawAstigmatismTest();
+        } else if (stepNumber === 4) {
+            createContrastTest();
+        }
+    }
+
+    function nextStep() {
+        if (currentStep < 4) {
+            showStep(currentStep + 1);
+        }
+    }
+
+    // Test 1: Visual Acuity Functions
+    function updateDisplay() {
+        const level = testLevels[currentLevel];
+        const letterElement = document.getElementById('test-letter');
+        const sizeInfo = document.getElementById('size-info');
+        const progress = document.getElementById('progress-fill');
+        
+        letterElement.textContent = letters[Math.floor(Math.random() * letters.length)];
+        letterElement.style.fontSize = level.size + 'px';
+        sizeInfo.textContent = `Current size: ${level.acuity} equivalent`;
+        
+        const progressPercent = (currentLevel / (testLevels.length - 1)) * 100;
+        progress.style.width = progressPercent + '%';
+    }
+
+    function canRead() {
+        smallestReadableLevel = currentLevel;
+        if (currentLevel < testLevels.length - 1) {
+            currentLevel++;
+            updateDisplay();
+        } else {
+            completeAcuityTest('excellent');
+        }
+    }
+
+    function somewhatBlurry() {
+        smallestReadableLevel = currentLevel - 1;
+        if (currentLevel < testLevels.length - 1) {
+            currentLevel++;
+            updateDisplay();
+        } else {
+            completeAcuityTest('good');
+        }
+    }
+
+    function cantRead() {
+        smallestReadableLevel = currentLevel > 0 ? currentLevel - 1 : 0;
+        completeAcuityTest('limited');
+    }
+
+    function completeAcuityTest(resultType) {
+        const resultLevel = testLevels[smallestReadableLevel];
+        testResults.acuity = resultLevel.acuity;
+        
+        const acuityValue = parseInt(resultLevel.acuity.split('/')[1]);
+        if (acuityValue <= 20) testResults.acuityAssessment = 'Excellent';
+        else if (acuityValue <= 30) testResults.acuityAssessment = 'Very Good';
+        else if (acuityValue <= 40) testResults.acuityAssessment = 'Good';
+        else if (acuityValue <= 60) testResults.acuityAssessment = 'Fair';
+        else testResults.acuityAssessment = 'Needs Improvement';
+        
+        nextStep();
+    }
+
+    // Test 2: Astigmatism Functions
+    function drawAstigmatismTest() {
+        const canvas = document.getElementById('astigmatismCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 150;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw radial lines
+        ctx.strokeStyle = '#1a2332';
+        ctx.lineWidth = 2;
+        
+        for (let i = 0; i < 180; i += 15) {
+            const angle = (i * Math.PI) / 180;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#007bff';
+        ctx.fill();
+    }
+
+    function astigmatismResult(result) {
+        testResults.astigmatism = result;
+        testResults.astigmatismResult = result === 'normal' ? 
+            'No signs of astigmatism detected' : 
+            result === 'mild' ? 'Mild astigmatism possible' : 'Significant astigmatism likely';
+        nextStep();
+    }
+
+    // Test 3: Simple Color Vision Functions
+    function selectColorAnswer(testId, answer) {
+        // Remove selected class from all buttons in this test
+        const testItem = document.querySelector(`.color-test-item:nth-child(${testId})`);
+        const buttons = testItem.querySelectorAll('.color-option-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        
+        // Add selected class to clicked button
+        event.target.classList.add('selected');
+        
+        // Add visual feedback to the test item
+        testItem.classList.remove('selected');
+        testItem.classList.add('selected');
+        
+        // Store answer
+        testResults.colorAnswers[testId] = answer;
+        evaluateColorVision();
+    }
+
+    function evaluateColorVision() {
+        const normalVisionAnswers = {
+            1: 'Red and Green',      // Should see red and green clearly
+            2: 'Blue and Purple',    // Should see blue and purple clearly  
+            3: 'Dark Green and Light Green', // Should see brightness difference
+            4: 'Red'                 // Should see red clearly
+        };
+        
+        let normalCount = 0;
+        let totalAnswered = 0;
+        
+        for (let i = 1; i <= 4; i++) {
+            if (testResults.colorAnswers[i]) {
+                totalAnswered++;
+                if (testResults.colorAnswers[i] === normalVisionAnswers[i]) {
+                    normalCount++;
+                }
+            }
+        }
+        
+        if (totalAnswered === 4) {
+            if (normalCount === 4) {
+                testResults.colorVision = 'Normal color vision detected';
+            } else if (normalCount >= 2) {
+                testResults.colorVision = 'Possible mild color vision deficiency';
+            } else {
+                testResults.colorVision = 'Color vision deficiency likely';
+            }
+        }
+    }
+
+    // Test 4: Contrast Sensitivity Functions
+    function createContrastTest() {
+        const grid = document.getElementById('contrastGrid');
+        grid.innerHTML = '';
+        
+        const contrastLevels = [
+            { id: 1, background: '#f8f9fa', visible: true },
+            { id: 2, background: '#f0f0f0', visible: true },
+            { id: 3, background: '#e8e8e8', visible: true },
+            { id: 4, background: '#e0e0e0', visible: false },
+            { id: 5, background: '#d8d8d8', visible: false },
+            { id: 6, background: '#d0d0d0', visible: false }
+        ];
+        
+        contrastLevels.forEach(level => {
+            const item = document.createElement('div');
+            item.className = 'contrast-item';
+            item.innerHTML = `
+                <div class="contrast-circle" 
+                     style="background: ${level.background};"
+                     onclick="toggleContrastSelection(${level.id}, ${level.visible})">
+                </div>
+                <div>Level ${level.id}</div>
+            `;
+            grid.appendChild(item);
+        });
+    }
+
+    function toggleContrastSelection(levelId, shouldBeVisible) {
+        const circle = event.target.closest('.contrast-circle');
+        circle.classList.toggle('selected');
+        
+        testResults.contrastResults[levelId] = circle.classList.contains('selected');
+        evaluateContrastSensitivity();
+    }
+
+    function evaluateContrastSensitivity() {
+        const visibleLevels = Object.values(testResults.contrastResults).filter(Boolean).length;
+        
+        if (visibleLevels >= 3) {
+            testResults.contrastSensitivity = 'Excellent contrast sensitivity';
+        } else if (visibleLevels >= 1) {
+            testResults.contrastSensitivity = 'Good contrast sensitivity';
+        } else {
+            testResults.contrastSensitivity = 'Reduced contrast sensitivity';
+        }
+    }
+
+    // Final Results
+    function completeAllTests() {
+        const resultsContent = document.getElementById('results-content');
+        const testInterface = document.getElementById('test-interface');
+        const resultsSection = document.getElementById('results-section');
+        
+        resultsContent.innerHTML = `
+            <div class="result-card">
+                <h4>📊 Comprehensive Assessment Summary</h4>
+                
+                <div style="display: grid; gap: 15px; margin-top: 20px;">
+                    <div style="padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                        <strong>👁️ Visual Acuity:</strong> ${testResults.acuity} - ${testResults.acuityAssessment}
+                    </div>
+                    
+                    <div style="padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                        <strong>🔍 Astigmatism:</strong> ${testResults.astigmatismResult}
+                    </div>
+                    
+                    <div style="padding: 15px; background: #fff3e0; border-radius: 8px;">
+                        <strong>🌈 Color Vision:</strong> ${testResults.colorVision}
+                    </div>
+                    
+                    <div style="padding: 15px; background: #f3e5f5; border-radius: 8px;">
+                        <strong>⚫ Contrast Sensitivity:</strong> ${testResults.contrastSensitivity}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        testInterface.style.display = 'none';
+        resultsSection.style.display = 'block';
+        
+        setTimeout(autoSaveResults, 1000);
+    }
+
+    function autoSaveResults() {
+        document.getElementById('saving-spinner').style.display = 'block';
+        
+        document.getElementById('left-eye-input').value = testResults.acuity;
+        document.getElementById('right-eye-input').value = testResults.acuity;
+        document.getElementById('notes-input').value = `Comprehensive: ${testResults.acuity} acuity, ${testResults.astigmatismResult}, ${testResults.colorVision}, ${testResults.contrastSensitivity}`;
+        
+        setTimeout(() => {
+            document.getElementById('save-form').submit();
+        }, 1500);
+    }
+
+    // Initialize
+    updateDisplay();
+    updateStepIndicator();
+</script>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .register-container {
+        max-width: 400px;
+        margin: 30px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00d4aa, #00e5ff, #26de81);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .register-header h2 {
+        background: linear-gradient(135deg, #00d4aa, #00e5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .register-header p {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #1a2332;
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e1e8ed;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafb;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #00d4aa;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+    }
+
+    .register-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #00d4aa, #26de81);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .register-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 212, 170, 0.3);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #e1e8ed;
+    }
+
+    .login-link a {
+        color: #00d4aa;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #00a085;
+        text-decoration: underline;
+    }
+
+    .password-requirements {
+        background: #f8fafb;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border-left: 4px solid #00d4aa;
+    }
+
+    .password-requirements h4 {
+        margin: 0 0 10px 0;
+        color: #1a2332;
+        font-size: 0.9rem;
+    }
+
+    .requirements {
+        font-size: 0.8rem;
+        color: #64748b;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+        .register-container {
+            margin: 20px;
+            padding: 30px 25px;
+        }
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-header">
+        <h2>👁️ Join VisionScan</h2>
+        <p>Create your account</p>
+    </div>
+
+    <form method="POST" id="registerForm">
+        <div class="form-group">
+            <label for="username">👤 Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username" required 
+                   value="{{ request.form.username if request.form.username }}">
+        </div>
+
+        <div class="form-group">
+            <label for="password">🔒 Password</label>
+            <input type="password" id="password" name="password" placeholder="Create a password" required>
+        </div>
+
+        <div class="password-requirements">
+            <h4>🔐 Password Tips</h4>
+            <div class="requirements">
+                • Use at least 6 characters<br>
+                • Mix letters and numbers<br>
+                • Avoid common passwords
+            </div>
+        </div>
+
+        <button type="submit" class="register-btn">
+            Create Account
+        </button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="{{ url_for('login') }}">Sign in here</a>
+    </div>
+</div>
+
+<script>
+    // Auto-focus username field
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('username').focus();
+    });
+
+    // Add focus effects
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+nav a { margin: 0 10px; text-decoration: none; }
+.flashes li.success { color: green; }
+.flashes li.danger { color: red; }
+.flashes li.info { color: blue; }

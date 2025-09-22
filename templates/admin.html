@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin Panel - All Results</h2>
+<table border="1">
+    <tr>
+        <th>User</th>
+        <th>Test Type</th>
+        <th>Left Eye</th>
+        <th>Right Eye</th>
+        <th>Date</th>
+        <th>Notes</th>
+    </tr>
+    {% for row in records %}
+    <tr>
+        <td>{{ row['username'] }}</td>
+        <td>{{ row['test_type'] or 'Distance' }}</td>
+        <td>{{ row['left_eye_score'] or '-' }}</td>
+        <td>{{ row['right_eye_score'] or '-' }}</td>
+        <td>{{ row['timestamp'] }}</td>
+        <td>{{ row['notes'] or '-' }}</td>
+    </tr>
+    {% endfor %}
+</table>
