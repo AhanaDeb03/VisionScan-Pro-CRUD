@@ -1,3 +1,22 @@
+import os
+import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import bcrypt
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
+
+# Database configuration for Render
+def get_db_connection():
+    # On Render, use a persistent database path
+    if os.environ.get('RENDER'):
+        db_path = '/tmp/users.db'
+    else:
+        db_path = 'users.db'
+    
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    return conn
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import bcrypt
